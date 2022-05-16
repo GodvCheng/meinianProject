@@ -1,0 +1,368 @@
+<!doctype html> <html> <head> <meta charset=utf-8> <meta http-equiv=Content-Security-Policy-Report-Only content="script-src 'self' *.qq.com *.url.cn *.idqqimg.com *.tenpay.com *.qlogo.cn 'unsafe-inline' 'unsafe-eval'; report-uri http://buluo.qq.com/cgi-bin/feedback/re/csp/15"> <title>群资料卡</title> <script>//关键点测速上报开始
+window.timeScope = {};
+window.timeScope['pagestart'] = {
+    'start': new Date().getTime()
+}</script> <link rel=stylesheet type=text/css href=//s1.url.cn/qqun/qinfo_v3/css/member-87d8f8.css /> <script>window.timeScope['cssload'] = {
+    'start': new Date().getTime()
+}</script> <script>try{external.RemoveLoading()}catch(e){}</script> </head> <body data-speed=1 data-cssload=455037 data-jsload=455038 data-server=455020 data-local=455021 data-jsreload=455045 data-pv=455058 data-css=17 data-js=18> <div class="member-box noLabel" id=member-box> <ul class=member-control id=member-control></ul> <ul class=member-control id=member-control-blackuser style=display:none> <li> <button id=blackuser-return>返回</button> <span class=gray>以下成员近期多次被其他群举报或清理</span> <a id=adminNumHelp class=help href=http://kf.qq.com/faq/120511jiYzIJ140103yi6vQr.html target=_blank title=不良记录成员是什么？ aria-label=不良记录成员是什么？></a> </li> <li></li> </ul> <div id=member-thead></div> <ul class=member-tbody id=member-tbody></ul> </div> <div id=barMenu class=context-menu></div> <div id=homescroll-tip class=homescroll-tip style=display:none> <div class=ico></div> <h3>请填写群名片</h3> <p> <label>名片填写规范：</label> <span>语文老师 /小Q的爸爸 /小Q</span> </p> <div class=btn><button>知道了</button></div> <div class=acc></div> </div> <script id=nodeDataPoint></script> <script>//判断js加载是否成功,没有成功的话.从本地重载一次.
+window.timeScope['jsloadstart'] = {
+    'start': new Date().getTime()
+};
+var _isLoad = false,
+    _monitorList = [];
+var __monitor = function(id) {
+    //__report('http://report.url.cn/report/report_vm?'+id);
+    setTimeout(function() {
+        var img = new Image();
+        img.src = 'http://report.url.cn/report/report_vm?monitors=[' + id + ']&r=' + Math.random();
+        img = null;
+    }, 2000);
+};
+
+//上报属性收集
+var _bodyDom = document.querySelector('body');
+var _cssloadFail = _bodyDom.getAttribute('data-cssload'),
+    _jsloadFail = _bodyDom.getAttribute('data-jsload'),
+    _jsreload = _bodyDom.getAttribute('data-jsreload'),
+    _serverLoad = _bodyDom.getAttribute('data-server'),
+    _pv = _bodyDom.getAttribute('data-pv'),
+    _localLoad = _bodyDom.getAttribute('data-local');
+_bodyDom = null;
+
+_monitorList.push(_pv);
+//__monitor(_pv);
+
+//js加载判断
+function __jsLoad(e, flag) {
+    if (flag) {
+        //var newurl = 'http://'+location.host+'/qinfo_v3/js/lib/zepto.js';
+        var old = e.src.split('/'),
+            oldurl = old[old.length - 1],
+            newurl = 'http://' + location.host + '/qinfo_v3/js/' + oldurl;
+        if (oldurl.indexOf('zepto') >= 0) {
+            newurl = 'http://' + location.host + '/qinfo_v3/lib/' + oldurl;
+        }
+        if (_isLoad) {
+            __monitor(455034);
+        } else {
+            _monitorList.push(455034);
+        }
+
+    } else {
+        var old = e.src.split('/'),
+            oldurl = old[old.length - 1],
+            newurl = 'http://' + location.host + '/qinfo_v3/js/' + oldurl;
+        if (_isLoad) {
+            __monitor(_jsloadFail);
+        } else {
+            _monitorList.push(_jsloadFail);
+        }
+    }
+
+    var js = document.createElement('script');
+    js.setAttribute('type', 'text/javascript');
+    js.setAttribute('src', newurl);
+    js.onload = function() {
+        if (_isLoad) {
+            flag ? __monitor(455099) : __monitor(_jsreload);
+        } else {
+            flag ? _monitorList.push(455099) : _monitorList.push(_jsreload);
+        }
+    }
+    document.head.appendChild(js);
+}
+
+window.addEventListener('load', function() {
+    //monitor pv上报
+    setTimeout(function() {
+        _isLoad = true;
+        //__monitor(_pv);
+        if (_monitorList.length) {
+            __monitor(_monitorList.join(','));
+        }
+    }, 1000);
+}, false);
+
+var BJ_REPORT = (function(global) {
+    if (global.BJ_REPORT) return global.BJ_REPORT;
+
+    var _error = [];
+    var orgError = global.onerror;
+    global.onerror = function(msg, url, line, col, error) {
+        var newMsg = msg;
+
+        if (error && error.stack) {
+            newMsg = _processStackMsg(error);
+        }
+
+        if (_isOBJByType(newMsg, "Event")) {
+            newMsg += newMsg.type ? ('--' + newMsg.type + '--' + (newMsg.target ? (newMsg.target.tagName + "--" + newMsg.target.src) : "")) : "";
+        }
+
+        report.push({
+            msg: newMsg,
+            target: url,
+            rowNum: line,
+            colNum: col
+                /*error : error*/
+                /* stack : stack*/
+        });
+
+        _send();
+        orgError && orgError.apply(global, arguments);
+
+        __monitor(455028);
+    };
+
+    var _config = {
+        id: 0,
+        uin: 0,
+        url: "",
+        combo: 1,
+        ext: {},
+        level: 4, // 1-debug 2-info 4-error 8-fail
+        ignore: [],
+        random: 1,
+        delay: 1000,
+        submit: null
+    };
+
+    var _isOBJByType = function(o, type) {
+        return Object.prototype.toString.call(o) === "[object " + (type || "Object") + "]";
+    };
+
+    var _isOBJ = function(obj) {
+        var type = typeof obj;
+        return type === 'object' && !!obj;
+    };
+
+
+    var _processError = function(errObj) {
+        try {
+            if (errObj.stack) {
+                var url = errObj.stack.match('http://[^\n]+');
+                url = url ? url[0] : "";
+                var rowCols = url.match(':([0-9]+):([0-9]+)');
+                if (!rowCols) {
+                    rowCols = [0, 0, 0];
+                }
+
+                var stack = _processStackMsg(errObj);
+                return {
+                    msg: stack,
+                    rowNum: rowCols[1],
+                    colNum: rowCols[2],
+                    target: url.replace(rowCols[0], '')
+                        /* stack : stack*/
+                };
+            } else {
+                return errObj;
+            }
+        } catch (err) {
+            return errObj;
+        }
+    };
+
+    var _processStackMsg = function(error) {
+        var stack = error.stack.replace(/\n/gi, '').split(/\bat\b/).slice(0, 5).join("@").replace(/\?[^:]+/gi, "");
+        var msg = error.toString();
+        if (stack.indexOf(msg) < 0) {
+            stack = msg + "@" + stack;
+        }
+        return stack;
+    };
+
+    var _error_tostring = function(error, index) {
+        var param = [];
+        var params = [];
+        var stringify = [];
+        if (_isOBJ(error)) {
+            error.level = error.level || _config.level;
+            for (var key in error) {
+                var value = error[key] || "";
+                if (value) {
+                    if (_isOBJ(value)) {
+                        try {
+                            value = JSON.stringify(value);
+                        } catch (err) {
+                            value = "[BJ_REPORT detect value stringify error] " + err.toString();
+                        }
+                    }
+                    stringify.push(key + ":" + value);
+                    param.push(key + "=" + encodeURIComponent(value));
+                    params.push(key + "[" + index + "]=" + encodeURIComponent(value));
+                }
+            }
+        }
+
+        // msg[0]=msg&target[0]=target -- combo report
+        // msg:msg,target:target -- ignore
+        // msg=msg&target=target -- report with out combo
+        return [params.join("&"), stringify.join(","), param.join("&")];
+    };
+
+    var _imgs = [];
+    var _submit = function(url) {
+        if (_config.submit) {
+            _config.submit(url);
+        } else {
+            var _img = new Image();
+            _imgs.push(_img);
+            _img.src = url;
+        }
+    };
+
+    var error_list = [];
+    var comboTimeout = 0;
+    var _send = function(isReoprtNow) {
+        if (!_config.report) return;
+
+        while (_error.length) {
+            var isIgnore = false;
+            var error = _error.shift();
+            var error_str = _error_tostring(error, error_list.length);
+            for (var i = 0, l = _config.ignore.length; i < l; i++) {
+                var rule = _config.ignore[i];
+                if ((_isOBJByType(rule, "RegExp") && rule.test(error_str[1])) ||
+                    (_isOBJByType(rule, "Function") && rule(error, error_str[1]))) {
+                    isIgnore = true;
+                    break;
+                }
+            }
+            if (!isIgnore) {
+                if (_config.combo) {
+                    error_list.push(error_str[0]);
+                } else {
+                    _submit(_config.report + error_str[2] + "&_t=" + (+new Date));
+                }
+                _config.onReport && (_config.onReport(_config.id, error));
+            }
+        }
+
+        // 合并上报
+        var count = error_list.length;
+        if (count) {
+            var comboReport = function() {
+                clearTimeout(comboTimeout);
+                _submit(_config.report + error_list.join("&") + "&count=" + count + "&_t=" + (+new Date));
+                comboTimeout = 0;
+                error_list = [];
+            };
+
+            if (isReoprtNow) {
+                comboReport(); // 立即上报
+            } else if (!comboTimeout) {
+                comboTimeout = setTimeout(comboReport, _config.delay); // 延迟上报
+            }
+        }
+    };
+
+    var report = {
+        push: function(msg) { // 将错误推到缓存池
+            if (Math.random() >= _config.random) {
+                return report;
+            }
+            _error.push(_isOBJ(msg) ? _processError(msg) : {
+                msg: msg
+            });
+            _send();
+            return report;
+        },
+        info : function(msg){
+            console.log(msg);
+            if (!msg) {
+                return report;
+            }
+            if (_isOBJ(msg)) {
+                msg.level = 2;
+            } else {
+                msg = {
+                    msg: msg,
+                    level: 2
+                };
+            }
+            report.push(msg);
+            return report;
+        },
+        init: function(config) { // 初始化
+            if (_isOBJ(config)) {
+                for (var key in config) {
+                    _config[key] = config[key];
+                }
+            }
+            // 没有设置id将不上报
+            var id = parseInt(_config.id, 10);
+            if (id) {
+                _config.report = (_config.url || "http://badjs2.qq.com/badjs") + "?id=" + id + "&uin=" + parseInt(_config.uin || (document.cookie.match(/\buin=\D+(\d+)/) || [])[1], 10) + "&from=" + encodeURIComponent(location.href) + "&ext=" + JSON.stringify(_config.ext) + "&";
+            }
+            return report;
+        },
+
+        __onerror__: global.onerror
+
+
+    };
+
+    return report;
+}(window));
+
+BJ_REPORT.init({
+    id: 85
+});</script> <script>window.timeScope=window.timeScope||{},window.timeScope.jsloadstartStart=(new Date).getTime()</script> <script src=//s1.url.cn/qqun/qinfo_v3/libs/zepto-32008b.js></script> <script src=//s1.url.cn/qqun/qinfo_v3/js/member-099702.js></script> <script>window.timeScope.jsloadstartEnd=(new Date).getTime()</script> <div id=jsCssDetector class=js-css-detector style=height:0;font-size:0;height:0></div> <script>//测速上报..css.js检查等
+window.timeScope['jsloadstart'] = {
+    'end': new Date().getTime()
+}
+
+setTimeout(function() {
+    //检查css加载情况
+    function checkCssLoad() {
+        var visibility = window.getComputedStyle(document.getElementById('jsCssDetector')).visibility;
+        return visibility === 'hidden';
+    }
+
+    if (!checkCssLoad()) {
+        window['__file_css_load_file'] = false;
+
+        var oldCssUrl = document.querySelector('link').href,
+            fls = oldCssUrl.split('/'),
+            fileUrl = fls[fls.length - 1];
+        var newCssUrl = 'http://' + location.host + '/qinfo_v3/css/' + fileUrl;
+
+        //css切换到本地
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+
+        link.href = newCssUrl;
+        setTimeout(function() {
+            if (checkCssLoad()) {
+                //重新加载css成功
+                if (_isLoad) {
+                    __monitor(455043);
+                } else {
+                    _monitorList.push(455043);
+                }
+            }
+        }, 5000);
+        document.head[0].appendChild(link);
+        if (_isLoad) {
+            __monitor(_cssloadFail);
+        } else {
+            _monitorList.push(_cssloadFail);
+        }
+    }
+
+}, 100);
+
+var __global_env = '<!-- @echo CUR_ENV -->';
+var _loadStatus;
+if (__global_env == 'local') { // 本地化版本
+    _loadStatus = _localLoad;
+} else { // 服务端版本
+    _loadStatus = _serverLoad;
+}
+if (_isLoad) {
+    __monitor(_loadStatus);
+} else {
+    _monitorList.push(_loadStatus);
+}</script> <script>window.timeScope.domReady=(new Date).getTime()</script> <script>document.addEventListener("DOMContentLoaded",function(){var e=document.querySelector("#member-tbody"),t=document.querySelector("#member-thead");e.scrollHeight>e.clientHeight&&(t.className+=" tbody-scroll")},!1)</script> </body> </html> 

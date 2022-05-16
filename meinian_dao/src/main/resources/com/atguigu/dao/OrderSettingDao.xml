@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.dao.OrderSettingDao">
+
+    <insert id="add" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_ordersetting(orderDate, number, reservations)
+        VALUES (#{orderDate}, #{number}, #{reservations})
+    </insert>
+    <update id="update">
+        UPDATE t_ordersetting
+        SET number = #{number}
+        where orderDate = #{orderDate}
+    </update>
+    <update id="editReservations">
+        update `t_ordersetting`
+        set reservations=#{reservations}
+        where orderDate = #{orderDate}
+    </update>
+    <select id="findCount" resultType="int">
+        SELECT count(1)
+        FROM t_ordersetting
+        WHERE orderDate = #{orderDate}
+    </select>
+    <select id="getReservation" resultType="com.atguigu.pojo.OrderSetting">
+        SELECT orderDate, number, reservations
+        FROM t_ordersetting
+        WHERE orderDate BETWEEN #{startDate} AND #{endDate}
+    </select>
+    <select id="getOrderSettingCount" resultType="com.atguigu.pojo.OrderSetting">
+        select *
+        from `t_ordersetting`
+        where orderDate = #{orderDate}
+    </select>
+    <select id="findById" resultType="map" >
+        SELECT m.name AS member, s.name AS setmeal, o.orderDate AS orderDate, o.orderType AS orderType
+        FROM t_order o,
+             t_member m,
+             t_setmeal s
+        WHERE o.member_id = m.id
+          AND o.setmeal_id = s.id
+          AND o.id = #{id}
+    </select>
+</mapper>
+
+
+
+
+
+
+
+

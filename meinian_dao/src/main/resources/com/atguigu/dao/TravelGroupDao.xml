@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.dao.TravelGroupDao">
+    <insert id="add" keyProperty="id" useGeneratedKeys="true">
+        insert into t_travelgroup(code, name, helpCode, sex, remark, attention)
+        values (#{code}, #{name}, #{helpCode}, #{sex}, #{remark}, #{attention})
+    </insert>
+    <insert id="setTravelGroupAndTravelItem">
+        insert into t_travelgroup_travelitem
+        values (#{travelGroupId}, #{travelItemId})
+    </insert>
+    <update id="edit">
+        update t_travelgroup
+        <set>
+            <if test="code!=null and code.length>0">
+                code=#{code},
+            </if>
+            <if test="name!=null and name.length>0">
+                name=#{name},
+            </if>
+            <if test="helpCode!=null and helpCode.length>0">
+                helpCode=#{helpCode},
+            </if>
+            <if test="sex!=null and sex.length>0">
+                sex=#{sex},
+            </if>
+            <if test="remark!=null and remark.length>0">
+                remark=#{remark},
+            </if>
+            <if test="attention!=null and attention.length>0">
+                attention=#{attention}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <!-- 删除关联表中的数据-->
+    <delete id="delete">
+        DELETE
+        FROM t_travelgroup_travelitem
+        WHERE travelgroup_id = #{id}
+    </delete>
+    <!-- 删除t_travelGroup中的数据-->
+    <delete id="deleteTravelGroup">
+        DELETE
+        FROM t_travelgroup
+        WHERE id = #{id}
+    </delete>
+
+    <select id="findByPage" resultType="com.atguigu.pojo.TravelGroup">
+        select * from t_travelgroup
+        <where>
+            <if test="value != null and value.length > 0">
+                code =#{value} or name like concat("%",#{value},"%") or helpCode = #{value}
+            </if>
+        </where>
+    </select>
+    <select id="findById" resultType="com.atguigu.pojo.TravelGroup">
+        select *
+        from t_travelgroup
+        where id = #{id}
+    </select>
+    <select id="findTravelItemIdByTravelGroupId" resultType="java.lang.Integer">
+        SELECT travelitem_id
+        FROM t_travelgroup_travelitem
+        WHERE travelgroup_id = #{id}
+    </select>
+    <select id="findAll" resultType="com.atguigu.pojo.TravelGroup">
+        select *
+        from t_travelgroup
+    </select>
+    <select id="findTravelGroupById" resultMap="setTravelGroup">
+        SELECT t_travelgroup.*
+        FROM t_travelgroup
+                 JOIN t_setmeal_travelgroup
+                      ON t_travelgroup.`id` = t_setmeal_travelgroup.`travelgroup_id`
+        WHERE setmeal_id = #{id}
+    </select>
+    <resultMap id="setTravelGroup" type="com.atguigu.pojo.TravelGroup">
+        <id column="id" property="id"></id>
+        <result column="code" property="code"></result>
+        <result column="name" property="name"></result>
+        <result column="helpCode" property="helpCode"></result>
+        <result column="sex" property="sex"></result>
+        <result column="remark" property="remark"></result>
+        <result column="attention" property="attention"></result>
+        <!-- 设置集合类型对象-->
+        <collection property="travelItems" column="id"
+                    select="com.atguigu.dao.TravelItemDao.findTravelItemById"></collection>
+    </resultMap>
+
+</mapper>
+
+
+
+
+
+
+
+

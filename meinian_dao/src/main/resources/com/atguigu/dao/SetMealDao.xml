@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.dao.SetMealDao">
+
+    <insert id="add" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_setmeal (name, code, helpCode, sex, age, price, remark, attention, img)
+        VALUES (#{name}, #{code}, #{helpCode}, #{sex}, #{age}, #{price}, #{remark}, #{attention}, #{img})
+    </insert>
+    <insert id="setMealAndTravelGroup" useGeneratedKeys="true" keyProperty="id">
+        insert into t_setmeal_travelgroup
+        values (#{setMealId}, #{travelGroupId})
+    </insert>
+    <update id="edit">
+        update t_setmeal
+        <set>
+            <if test="name != null and name.length>0">
+                name = #{name},
+            </if>
+            <if test="code != null and code.length>0">
+                code = #{code},
+            </if>
+            <if test="helpCode != null and helpCode.length>0">
+                helpCode = #{helpCode},
+            </if>
+            <if test="sex != null and sex.length>0">
+                sex = #{sex},
+            </if>
+            <if test="age != null and age.length>0">
+                age = #{age},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="remark != null and remark.length>0">
+                remark = #{remark},
+            </if>
+            <if test="attention != null and attention.length>0">
+                attention = #{attention},
+            </if>
+            <if test="img != null and img.length>0">
+                img = #{img}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <insert id="setSetMealAndTravelGroup">
+        insert into t_setmeal_travelgroup
+        values (#{setMealId}, #{travelGroupIds});
+    </insert>
+    <select id="setMealInfo" resultType="com.atguigu.pojo.Setmeal">
+        select *
+        from t_setmeal
+        where id = #{id}
+    </select>
+    <delete id="delete">
+        delete
+        from t_setmeal
+        where id = #{id}
+    </delete>
+    <!-- 删除关联表中的数据-->
+    <delete id="deleteAssociation">
+        delete
+        from t_setmeal_travelgroup
+        where setmeal_id = #{id}
+    </delete>
+    <select id="findByPage" resultType="com.atguigu.pojo.Setmeal">
+        SELECT * FROM t_setmeal
+        <where>
+            <if test="queryString != null and queryString.length > 0">
+                `name` LIKE CONCAT("%",#{queryString},"%") OR `code` = #{queryString} OR helpCode = #{queryString}
+            </if>
+        </where>
+    </select>
+    <select id="getSetMeal" resultType="com.atguigu.pojo.Setmeal">
+        select *
+        from t_setmeal
+    </select>
+
+    <select id="findById" resultMap="setMealByTravelGroup">
+        SELECT *
+        FROM t_setmeal
+        where id = #{id}
+    </select>
+    <select id="findSetMealNameAndOrderCount" resultType="java.util.Map">
+        SELECT s.name AS name, COUNT(o.id) AS value
+        FROM t_setmeal s, t_order o
+        WHERE s.id = o.setmeal_id
+        GROUP BY s.name
+    </select>
+    <select id="findAll" resultType="com.atguigu.pojo.TravelGroup">
+        select *
+        from t_travelgroup
+    </select>
+    <select id="findTravelGroup" resultType="int">
+        select *
+        from t_travelgroup
+        where id = #{id}
+    </select>
+    <resultMap id="setMealByTravelGroup" type="com.atguigu.pojo.Setmeal">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+        <result property="code" column="code"></result>
+        <result property="helpCode" column="helpCode"></result>
+        <result property="sex" column="sex"></result>
+        <result property="age" column="age"></result>
+        <result property="price" column="price"></result>
+        <result property="remark" column="remark"></result>
+        <result property="attention" column="attention"></result>
+        <result property="img" column="img"></result>
+        <collection property="travelGroups" column="id"
+                    select="com.atguigu.dao.TravelGroupDao.findTravelGroupById"></collection>
+    </resultMap>
+</mapper>
+
+
+
+
+
+
+
+
