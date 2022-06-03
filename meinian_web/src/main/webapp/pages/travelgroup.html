@@ -393,10 +393,12 @@
                 }).then(() => {
                     axios.get('/TravelGroup/deleteTravelGroup.do?id=' + row.id).then((resp) => {
                         if (resp.data.flag) {
+                            this.findPage()
                             this.$message({
                                 message: resp.data.message,
                                 type: 'success'
                             })
+
                         } else {
                             this.$message({
                                 message: '无法删除!',

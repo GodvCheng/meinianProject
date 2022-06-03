@@ -493,6 +493,7 @@
                 }).then(() => {
                     axios.get('/SetMeal/delete.do?id=' + row.id).then((resp) => {
                         if (resp.data.flag) {
+                            this.findPage()
                             this.$message({
                                 message: resp.data.message,
                                 type: 'success'

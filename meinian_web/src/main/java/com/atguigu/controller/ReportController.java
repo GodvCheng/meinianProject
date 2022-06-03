@@ -159,7 +159,8 @@ public class ReportController {
                 row.getCell(6).setCellValue(((BigDecimal) map.get("proportion")).doubleValue());
             }
             ServletOutputStream outputStream = response.getOutputStream();
-            response.setContentType("application/vnd.ms-excel");
+//            response.setContentType("application/vnd.ms-excel");
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             // 设置下载形式(通过附件的形式下载)
             response.setHeader("content-Disposition", "attachment;filename=report.xlsx");
             workbook.write(outputStream);
